@@ -15,14 +15,16 @@ import requests
 from bs4 import BeautifulSoup
 from lxml import html
 
+'''Функция получения странички'''
 def get_html(url):
     new_response = requests.get(url)
     return new_response.text
 
+'''Функция возврата значения из словаря'''
 def currency_rates(dict_currency, string_currency):
-    
-        pass
+    return dict_currency.get(string_currency)
 
+'''Функция очистки от мусора'''
 def remove_trash(my_list, prefix, suffix):
     for index, value in enumerate(my_list):
         value = str (value).removeprefix (prefix)
@@ -30,34 +32,35 @@ def remove_trash(my_list, prefix, suffix):
         my_list[index] = value
     return my_list
 
-def make_dict(key, value_name, value_nominal, value):
-    my_dict = {}
-    for index in range (len(key)):
-        my_dict[key[index]] = [value_name[index], value_nominal[index], value[index]]
-    return my_dict
+
+'''Функция создания словаря из списков'''
+def make_dict(key, value_name, value):
+    return {key[index]: [value_name[index], value[index]] for index in range (len(key))}
 
 
+'''Функция получает страницу, вырезает с нее необходимые данные, чистит от мусора и создает словарь, который
+возвращает'''
 def get_me_info(html):
     o_obj_soup = BeautifulSoup(html, 'lxml')
-    print(o_obj_soup)
-    currency_charcode = o_obj_soup.find_all('charcode')
-    currency_nominal = o_obj_soup.find_all ('nominal')
-    currency_value = o_obj_soup.find_all ('value')
-    currency_name = o_obj_soup.find_all('name')
-    currency_charcode = remove_trash(currency_charcode, '<charcode>', '</charcode>')
-    currency_nominal = remove_trash (currency_nominal, '<nominal>', '</nominal>')
-    currency_value = remove_trash (currency_value, '<value>', '</value>')
-    currency_name = remove_trash(currency_name, '<name>', '</name>')
-    currency = make_dict(currency_charcode, currency_name, currency_nominal, currency_value)
-    return currency
+    currency_charcode = remove_trash(o_obj_soup.find_all('charcode'), '<charcode>', '</charcode>')
+    currency_value = remove_trash (o_obj_soup.find_all ('value'), '<value>', '</value>')
+    currency_name = remove_trash(o_obj_soup.find_all('name'), '<name>', '</name>')
+    return make_dict(currency_charcode, currency_name, currency_value)
 
 
 
+
+'''Рабочая функция'''
 def running():
-    url = 'http://www.cbr.ru/scripts/XML_daily.asp'
-    new_text = get_html(url)
-    my_dict = get_me_info(new_text)
-    print (currency_rates(my_dict, 'USD'))
+    try:
+        url = 'http://www.cbr.ru/scripts/XML_daily.asp'
+        new_text = get_html(url)
+        my_dict = get_me_info(new_text)
+        print(' '.join(currency_rates(my_dict, 'USD')))
+        print (' '.join (currency_rates (my_dict, 'EUR')))
+        print (' '.join (currency_rates (my_dict, 'RRR')))
+    except TypeError:
+        print('Нет такой валюты')
     pass
 
 if __name__ == '__main__':
