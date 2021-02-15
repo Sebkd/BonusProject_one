@@ -11,13 +11,29 @@ requests . В качестве API можно использовать http://ww
 которого нет в ответе, вернуть None. Можно ли сделать работу функции не зависящей от того, в
 каком регистре был передан аргумент? В качестве примера выведите курсы доллара и евро.
 '''
-import request
-import bs4
+import requests
+from bs4 import BeautifulSoup
+from lxml import html
+
+def get_html(url):
+    new_response = requests.get(url)
+    return new_response.text
 
 def currency_rates(argv):
+        pass
+
+def get_me_info(html):
+    o_obj_soup = BeautifulSoup(html, 'lxml')
+    print(o_obj_soup.text)
     pass
 
+
+
 def running():
+    url = 'http://www.cbr.ru/scripts/XML_daily.asp'
+    new_text = get_html(url)
+    get_me_info(new_text)
+    print(new_text)
     pass
 
 if __name__ == '__main__':
