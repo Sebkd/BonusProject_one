@@ -24,7 +24,10 @@ def currency_rates(argv):
 
 def get_me_info(html):
     o_obj_soup = BeautifulSoup(html, 'lxml')
-    print(o_obj_soup.text)
+    print(o_obj_soup)
+    # print (o_obj_soup.text)
+    currency = o_obj_soup.findAll('valute')
+    print(currency)
     pass
 
 
@@ -33,7 +36,7 @@ def running():
     url = 'http://www.cbr.ru/scripts/XML_daily.asp'
     new_text = get_html(url)
     get_me_info(new_text)
-    print(new_text)
+    # print(new_text)
     pass
 
 if __name__ == '__main__':
