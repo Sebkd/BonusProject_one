@@ -20,9 +20,11 @@ def get_html(url):
     new_response = requests.get(url)
     return new_response.text
 
+
 '''Функция возврата значения из словаря'''
 def currency_rates(dict_currency, string_currency):
     return dict_currency.get(string_currency)
+
 
 '''Функция очистки от мусора'''
 def remove_trash(my_list, prefix, suffix):
@@ -48,8 +50,6 @@ def get_me_info(html):
     return make_dict(currency_charcode, currency_name, currency_value)
 
 
-
-
 '''Рабочая функция'''
 def running():
     try:
@@ -62,6 +62,7 @@ def running():
     except TypeError:
         print('Нет такой валюты')
     pass
+
 
 if __name__ == '__main__':
     running()
