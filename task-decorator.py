@@ -13,6 +13,7 @@ def sqrt(num):
     return num ** 0.5
 
 
+
 class Test():
     def __init__(self, x_axis, y_axis):
         self._x_axis = x_axis
