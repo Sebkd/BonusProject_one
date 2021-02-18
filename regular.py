@@ -1,8 +1,11 @@
 # regular
 '''изучаю регулярные выражения'''
 
-from task1 import get_html
+from task1 import get_html, make_dict
 import re
+from bs4 import BeautifulSoup
+import numpy
+
 '''
 пример кода
 <?xml version="1.0" encoding="windows-1251"?><ValCurs Date="19.02.2021" name="Foreign Currency Market">' 
@@ -19,14 +22,24 @@ import re
 <Value>13,6349</Value></Valute></ValCurs>'
 '''
 
+
+def get_me_info(html):
+    my_obj_soup = BeautifulSoup(html, 'lxml')
+    charcode_re = re.findall(r'\b\w{3}\b', str(my_obj_soup.find_all('charcode')))
+    value_re = re.findall(r'\d+,\d{4}', str(my_obj_soup.find_all('value')))
+    pass
+
+
 '''Рабочая функция'''
 def running():
-    try:
-        url = 'http://www.cbr.ru/scripts/XML_daily.asp'
-        new_text = get_html(url)
-        print(new_text)
-    except TypeError:
-        print('Нет такой валюты')
+    # try:
+    url = 'http://www.cbr.ru/scripts/XML_daily.asp'
+    new_text = get_html (url)
+    my_dict = get_me_info (new_text)
+    print (new_text)
+
+    # except TypeError:
+    #     print('Нет такой валюты')
     pass
 
 if __name__ == '__main__':
