@@ -39,13 +39,22 @@ def get_me_info(html):
                          r'|\b[А-я]+\b', str(my_obj_soup.find_all('name')))
     return {charcode_re[index]: [name_re[index], value_re[index]] for index in range (len (charcode_re))}
 
+def selection_window(dictionary=1):
+    window = tk.Tk()
+    greet = tk.Label(
+        text="hello",
+        foreground = "red",# Устанавливает белый текст
+        background = "black"  # Устанавливает черный фон
+    )
+    greet.pack()
+    window.mainloop()
+    pass
+
 
 '''Рабочая функция'''
 def running():
     # try:
     url = 'http://www.cbr.ru/scripts/XML_daily.asp'
-    new_text = get_html (url)
-    print(new_text)
     my_dict = get_me_info (get_html (url))
     print (f'{my_dict}\n')
     print(selection_window())
@@ -54,14 +63,7 @@ def running():
     #     print('Нет такой валюты')
     pass
 
-def selection_window(dictionary=1):
-    tk._test ()
-    window = tk.Tk()
-    # window.title()
-    greetin = tk.Label(text='hi lord')
-    # greetin.pack
 
-    pass
 
 
 if __name__ == '__main__':
