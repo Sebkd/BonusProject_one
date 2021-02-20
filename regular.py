@@ -21,12 +21,21 @@ import tkinter
 <NumCode>986</NumCode><CharCode>BRL</CharCode><Nominal>1</Nominal><Name>Бразильский реал</Name>' 
 <Value>13,6349</Value></Valute></ValCurs>'
 '''
+# \b[А-я]+\b одно слово в валюте
+# \b[А-я]+\s+[А-я]+\b два слова в валюте
+# \b[А-я]+\s+[А-я]+\s+[А-я]+\b' три слова в валюте
+# \b[А-я]+\s+[А-я]+\s+[А-я]+\s+[А-я]+\b' четыре слова в валюте
 
 
 def get_me_info(html):
     my_obj_soup = BeautifulSoup(html, 'lxml')
     charcode_re = re.findall(r'\b\w{3}\b', str(my_obj_soup.find_all('charcode')))
     value_re = re.findall(r'\d+,\d{4}', str(my_obj_soup.find_all('value')))
+    bad = r'[А-я]'
+    name_re = re.findall(r'\b[А-я]+\s+[А-я]+\s+[А-я]+\s+[А-я]+\b', str(my_obj_soup.find_all('name')))
+    print(charcode_re, name_re)
+    print(name_re)
+    print(len(name_re), len(charcode_re), len(charcode_re))
     return {charcode_re[index]: value_re[index] for index in range (len (charcode_re))}
     pass
 
@@ -36,6 +45,7 @@ def running():
     # try:
     url = 'http://www.cbr.ru/scripts/XML_daily.asp'
     new_text = get_html (url)
+    print(new_text)
     my_dict = get_me_info (get_html (url))
     print (my_dict)
 
@@ -44,6 +54,7 @@ def running():
     pass
 
 def selection_window(dictionary):
+    pass
 
 
 if __name__ == '__main__':
