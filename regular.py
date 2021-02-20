@@ -4,7 +4,7 @@
 from task1 import get_html, make_dict
 import re
 from bs4 import BeautifulSoup
-import numpy
+import tkinter
 
 '''
 пример кода
@@ -27,6 +27,7 @@ def get_me_info(html):
     my_obj_soup = BeautifulSoup(html, 'lxml')
     charcode_re = re.findall(r'\b\w{3}\b', str(my_obj_soup.find_all('charcode')))
     value_re = re.findall(r'\d+,\d{4}', str(my_obj_soup.find_all('value')))
+    return {charcode_re[index]: value_re[index] for index in range (len (charcode_re))}
     pass
 
 
@@ -35,12 +36,15 @@ def running():
     # try:
     url = 'http://www.cbr.ru/scripts/XML_daily.asp'
     new_text = get_html (url)
-    my_dict = get_me_info (new_text)
-    print (new_text)
+    my_dict = get_me_info (get_html (url))
+    print (my_dict)
 
     # except TypeError:
     #     print('Нет такой валюты')
     pass
+
+def selection_window(dictionary):
+
 
 if __name__ == '__main__':
     running()
