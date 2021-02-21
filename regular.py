@@ -1,11 +1,11 @@
 # regular
-'''изучаю регулярные выражения'''
+'''изучаю регулярные выражения, tkinter и bs4'''
 
-from task1 import get_html
+import requests
 import re
 from bs4 import BeautifulSoup
-from tkinter import Tk, BOTH, Listbox, StringVar, Message
-from tkinter.ttk import Frame, Label
+from tkinter import Tk, BOTH, Listbox, StringVar, Message, END
+from tkinter.ttk import Frame
 
 '''
 пример кода
@@ -35,15 +35,19 @@ class Show_me(Frame):
         self.pack (fill = BOTH, expand = 1)
 
         lb = Listbox (self)
-
+        '''Заполняю логику списка отображения'''
         for key_to_show in self.dictionary.keys():
-            lb.insert (0, key_to_show)
+            lb.insert (END, key_to_show)
             self.my_list.append(key_to_show)
 
+
+        '''реакция на выбор'''
         lb.bind ("<<ListboxSelect>>", self.onSelect)
         lb.config (height = 10, width = 50)
         lb.pack (pady = 15)
 
+
+        '''функция отображения выбора '''
         self.var = StringVar ()
         self.label = Message (self,
                             foreground = 'black',
@@ -52,10 +56,14 @@ class Show_me(Frame):
                             textvariable = self.var)
         self.label.pack ()
 
+
+    '''функция логики отображения выбора'''
     def onSelect(self, val):
         sender = val.widget
         index = sender.curselection ()[0]
-        value = 'Курс российского рубля к этой валюте = ' + self.dictionary.get(self.my_list[index])
+        value = 'Курс российского рубля' + '1 к ' + \
+                (self.dictionary.get(self.my_list[index]))[1] + ' ' + \
+                'к этой валюте = ' + (self.dictionary.get(self.my_list[index]))[0]
         self.var.set (value)
 
 ''' Описание поиска регулярных выражений для описания валюты
@@ -66,17 +74,30 @@ class Show_me(Frame):
 \b[А-Я]+\s+\S[А-я]+\s+[А-я]+\s+[А-я]+\S\b четыре слова в валюте СДР
 '''
 
-def get_me_info(html):
-    my_obj_soup = BeautifulSoup(html, 'lxml')
-    charcode_re = re.findall(r'\b\w{3}\b', str(my_obj_soup.find_all('charcode')))
-    value_re = re.findall(r'\d+,\d{4}', str(my_obj_soup.find_all('value')))
-    name_re = re.findall(r'\b[А-Я]+\s+\S[А-я]+\s+[А-я]+\s+[А-я]+\b'
-                         r'|\b[А-я]+\s+[А-я]+\s+[А-я]+\s+[А-я]+\b'
-                         r'|\b[А-я]+\s+[А-я]+\s+[А-я]+\b'
-                         r'|\b[А-я]+\s+[А-я]+\b'
-                         r'|\b[А-я]+\b', str(my_obj_soup.find_all('name')))
-    # return {charcode_re[index]: [name_re[index], value_re[index]] for index in range (len (charcode_re))}
-    return {name_re[index]: value_re[index] for index in range (len (charcode_re))}
+class Get_dict_html():
+    def __init__(self, url_path):
+        self.url_p = url_path
+        self.html_str = self.get_html()
+
+
+    '''Функция получения странички'''
+    def get_html(self):
+        new_response = requests.get(self.url_p)
+        return new_response.text
+
+
+    '''Функция отчистки странички от мусора и формирования словаря'''
+    def get_me_info(self, html_str):
+        my_obj_soup = BeautifulSoup (html_str, 'lxml')
+        nominal_re = re.findall (r'\b\d+\b', str (my_obj_soup.find_all ('nominal')))
+        value_re = re.findall (r'\d+,\d{4}', str (my_obj_soup.find_all ('value')))
+        name_re = re.findall (r'\b[А-Я]+\s+\S[А-я]+\s+[А-я]+\s+[А-я]+\b'
+                              r'|\b[А-я]+\s+[А-я]+\s+[А-я]+\s+[А-я]+\b'
+                              r'|\b[А-я]+\s+[А-я]+\s+[А-я]+\b'
+                              r'|\b[А-я]+\s+[А-я]+\b'
+                              r'|\b[А-я]+\b', str (my_obj_soup.find_all ('name')))
+        return {name_re[index]: [value_re[index], nominal_re[index]] for index in range (len (nominal_re))}
+
 
 def selection_window(dictionary):
     window = Tk()
@@ -89,11 +110,9 @@ def selection_window(dictionary):
 '''Рабочая функция'''
 def running():
     url = 'http://www.cbr.ru/scripts/XML_daily.asp'
-    my_dict = get_me_info (get_html (url))
-    selection_window(my_dict)
+    my_dict = Get_dict_html(url)
+    selection_window(my_dict.get_me_info(my_dict.html_str))
     pass
-
-
 
 
 if __name__ == '__main__':
