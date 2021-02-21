@@ -1,10 +1,11 @@
 # regular
 '''изучаю регулярные выражения'''
 
-from task1 import get_html, make_dict
+from task1 import get_html
 import re
 from bs4 import BeautifulSoup
-import tkinter as tk
+from tkinter import Tk, BOTH, Listbox, StringVar, Message
+from tkinter.ttk import Frame, Label
 
 '''
 пример кода
@@ -21,14 +22,49 @@ import tkinter as tk
 <NumCode>986</NumCode><CharCode>BRL</CharCode><Nominal>1</Nominal><Name>Бразильский реал</Name>' 
 <Value>13,6349</Value></Valute></ValCurs>'
 '''
-class 
+class Show_me(Frame):
+    def __init__(self, in_dict):
+        super ().__init__ ()
+        self.dictionary = in_dict
+        self.my_list = []
+        self.initUI ()
 
-# \b[А-я]+\b одно слово в валюте
-# \b[А-я]+\s+[А-я]+\b два слова в валюте
-# \b[А-я]+\s+[А-я]+\s+[А-я]+\b три слова в валюте
-# \b[А-я]+\s+[А-я]+\s+[А-я]+\s+[А-я]+\b четыре слова в валюте
-# \b[А-Я]+\s+\S[А-я]+\s+[А-я]+\s+[А-я]+\S\b четыре слова в валюте СДР
 
+    def initUI(self):
+        self.master.title ("Курс рубля по отношению к другим валютам")
+        self.pack (fill = BOTH, expand = 1)
+
+        lb = Listbox (self)
+
+        for key_to_show in self.dictionary.keys():
+            lb.insert (0, key_to_show)
+            self.my_list.append(key_to_show)
+
+        lb.bind ("<<ListboxSelect>>", self.onSelect)
+        lb.config (height = 10, width = 50)
+        lb.pack (pady = 15)
+
+        self.var = StringVar ()
+        self.label = Message (self,
+                            foreground = 'black',
+                            font = 'Arial 10',
+                            width = 500,
+                            textvariable = self.var)
+        self.label.pack ()
+
+    def onSelect(self, val):
+        sender = val.widget
+        index = sender.curselection ()[0]
+        value = 'Курс российского рубля к этой валюте = ' + self.dictionary.get(self.my_list[index])
+        self.var.set (value)
+
+''' Описание поиска регулярных выражений для описания валюты
+\b[А-я]+\b одно слово в валюте
+\b[А-я]+\s+[А-я]+\b два слова в валюте
+\b[А-я]+\s+[А-я]+\s+[А-я]+\b три слова в валюте
+\b[А-я]+\s+[А-я]+\s+[А-я]+\s+[А-я]+\b четыре слова в валюте
+\b[А-Я]+\s+\S[А-я]+\s+[А-я]+\s+[А-я]+\S\b четыре слова в валюте СДР
+'''
 
 def get_me_info(html):
     my_obj_soup = BeautifulSoup(html, 'lxml')
@@ -39,41 +75,22 @@ def get_me_info(html):
                          r'|\b[А-я]+\s+[А-я]+\s+[А-я]+\b'
                          r'|\b[А-я]+\s+[А-я]+\b'
                          r'|\b[А-я]+\b', str(my_obj_soup.find_all('name')))
-    return {charcode_re[index]: [name_re[index], value_re[index]] for index in range (len (charcode_re))}
+    # return {charcode_re[index]: [name_re[index], value_re[index]] for index in range (len (charcode_re))}
+    return {name_re[index]: value_re[index] for index in range (len (charcode_re))}
 
 def selection_window(dictionary):
-    window = tk.Tk()
-    window.columnconfigure ([0, 1], weight = 1, minsize = 25)
-    window.rowconfigure ([0, 1], weight = 1, minsize = 25)
-    frame = tk.Frame(
-        master = window
-    )
-    # frame.grid(padx = 5, pady = 5)
-    frame.pack(side = 'top')
-    widget = tk.Listbox(
-        master = frame
-        )
-    widget_two = tk.OptionMenu(
-        master = frame,
-        *dictionary
-        )
-    widget.pack(padx = 5, pady = 5)
-    for i in dictionary.values():
-        widget.insert(0, i[0])
+    window = Tk()
+    window.geometry ("500x300+700+350")
+    Show_me(dictionary)
     window.mainloop()
     pass
 
 
 '''Рабочая функция'''
 def running():
-    # try:
     url = 'http://www.cbr.ru/scripts/XML_daily.asp'
     my_dict = get_me_info (get_html (url))
-    print (f'{my_dict}\n')
     selection_window(my_dict)
-
-    # except TypeError:
-    #     print('Нет такой валюты')
     pass
 
 
