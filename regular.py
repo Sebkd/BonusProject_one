@@ -76,13 +76,13 @@ class Show_me(Frame):
 
 class Get_dict_html():
     def __init__(self, url_path):
-        self.url_p = url_path
-        self.html_str = self.get_html()
+        self._url_p = url_path
+        self._html_str = self.get_html()
 
 
     '''Функция получения странички'''
     def get_html(self):
-        new_response = requests.get(self.url_p)
+        new_response = requests.get(self._url_p)
         return new_response.text
 
 
@@ -98,22 +98,26 @@ class Get_dict_html():
                               r'|\b[А-я]+\b', str (my_obj_soup.find_all ('name')))
         return {name_re[index]: [value_re[index], nominal_re[index]] for index in range (len (nominal_re))}
 
+class Visio():
 
-def selection_window(dictionary):
-    window = Tk()
-    window.geometry ("500x300+700+350")
-    Show_me(dictionary)
-    window.mainloop()
-    pass
+    @staticmethod
+    def selection_window(dictionary):
+        window = Tk ()
+        window.geometry ("500x300+700+350")
+        Show_me (dictionary)
+        window.mainloop ()
+        pass
+
+
 
 
 '''Рабочая функция'''
-def running():
+def main():
     url = 'http://www.cbr.ru/scripts/XML_daily.asp'
-    my_dict = Get_dict_html(url)
-    selection_window(my_dict.get_me_info(my_dict.html_str))
+    Visio.selection_window(Get_dict_html(url).get_me_info(Get_dict_html(url)._html_str))
     pass
 
 
 if __name__ == '__main__':
-    running()
+    main()
+    pass
