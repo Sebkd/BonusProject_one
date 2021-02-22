@@ -4,6 +4,7 @@ import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter, AutoMinorLocator)
+import matplotlib.gridspec as gridspec
 # -----------------------------------------------------
 # plt.plot([i for i in range(5)], [i for i in range(5)])
 # plt.show()
@@ -120,33 +121,119 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter, AutoMinorLoc
 # plt.legend()
 # plt.show()
 # ------------------------------------------------------------------------------
-'''Работа с легендой
-Для отображения легенды на графике используется функция legend().
-Возможны следующие варианты ее вызова:
-legend()
-legend(labels)
-legend(handles, labels)
-'''
-x = [1, 5, 10, 15, 20]
-y1 = [1, 7, 3, 5, 11]
-y2 = [4, 3, 1, 8, 12]
-y3 = [(numbers + 2) for numbers in x]
-y4 = [(numbers + 2) for numbers in y2]
+# '''Работа с легендой
+# Для отображения легенды на графике используется функция legend().
+# Возможны следующие варианты ее вызова:
+# legend()
+# legend(labels)
+# legend(handles, labels)
+# '''
+# x = [1, 5, 10, 15, 20]
+# y1 = [1, 7, 3, 5, 11]
+# y2 = [4, 3, 1, 8, 12]
+# y3 = [(numbers + 2) for numbers in x]
+# y4 = [(numbers + 2) for numbers in y2]
+# plt.figure(figsize = (10, 5))
+#--------
 # plt.plot(x, y1, 'o-r', label='line 1')
 # plt.plot(x, y2, 'o-.g', label='line 2')
 # plt.plot(x, y3, 'o--b', label='line 3')
 # plt.plot(x, y4, 'o:m', label='line 4')
-# plt.legend() # legend явно принимает названия из .plot
-# plt.plot(x, y1, 'o-r')
-# plt.plot(x, y2, 'o-.g')
-# plt.plot(x, y3, 'o--b')
-# plt.plot(x, y4, 'o:m')
-# plt.legend(['L1', 'L2', 'L3', 'L4']) # второй вариант с labels внутри legend
-line1, = plt.plot(x, y1, 'o-r')
-line2, = plt.plot(x, y2, 'o-.g')
-line3, = plt.plot(x, y3, 'o--b')
-line4, = plt.plot(x, y4, 'o:m')
-plt.legend((line1, line2, line3, line4), ['line L1', 'line L2', 'line L3', 'line L4']) #третий вариант с кортежом
-plt.show()
+# # plt.legend() # legend явно принимает названия из .plot
+# ----------
+# # plt.plot(x, y1, 'o-r')
+# # plt.plot(x, y2, 'o-.g')
+# # plt.plot(x, y3, 'o--b')
+# # plt.plot(x, y4, 'o:m')
+# # plt.legend(['L1', 'L2', 'L3', 'L4']) # второй вариант с labels внутри legend
+# -----------
+# # line1, = plt.plot(x, y1, 'o-r')
+# # line2, = plt.plot(x, y2, 'o-.g')
+# # line3, = plt.plot(x, y3, 'o--b')
+# # line4, = plt.plot(x, y4, 'o:m')
+# # plt.legend((line1, line2, line3, line4), ['line L1', 'line L2', 'line L3', 'line L4']) #третий вариант с кортежом
+# '''
+# Для более гибкого управление расположением объекта можно
+# воспользоваться параметром bbox_to_anchor функции legend().
+# Этому параметру присваивается кортеж, состоящий из четырех или двух
+# элементов:
+# bbox_to_anchor = (x, y, width, height)
+# bbox_to_anchor = (x, y)
+# framealpha = Прозрачность легенды None или float
+# frameon - рамка,
+# facecolor - Цвет заливки None или str
+# edgecolor - Цвет рамки
+# '''
+# plt.legend(bbox_to_anchor=(1, 0.6), frameon = False) # Расположение легенды вне поля графика, нужно открыть 1 вар
+# plt.show()
 # -----------------------------------------------------------------------------------------------------------------
+'''
+Класс GridSpec, позволяет задавать геометрию сетки и расположение на
+ней полей с графиками. На первый взгляд может показаться, что работа
+с GridSpec довольно неудобна и требует написания лишнего кода, но,
+если требуется расположить поля с графиками нетривиальным образом,
+то этот инструмент становится незаменимым. Перед тем как работать с
+GridSpec импортируйте его
+
+Объект класса GridSpec, создается в строке:
+gridspec.GridSpec(ncols=2, nrows=1, figure=fg)
+В конструктор класса передается количество столбцов, строк и Фигура,
+на которой все будет отображено.
+Альтернативный вариант создания объекта GridSpec выглядит так:
+gs = fg.add_gridspec(1, 2)
+Здесь fg - это объект Figure, у которого есть метод add_gridspec(),
+позволяющий добавить на него сетку с заданными параметрами (в
+нашем случае одна строка и два столбца).
+'''
+x = [1, 2, 3, 4, 5]
+y1 = [9, 4, 2, 4, 9]
+y2 = [1, 7, 6, 3, 5]
+y3 = [-7, -4, 2, -4, -7]
+# ---- Свободная компоновка трех графиков
+# fg = plt.figure(figsize=(9, 4), constrained_layout=True)
+# gs = fg.add_gridspec(2, 2)
+# fig_ax_1 = fg.add_subplot(gs[0, :])
+# plt.plot(x, y2)
+# fig_ax_2 = fg.add_subplot(gs[1, 0])
+# plt.plot(x, y1)
+# fig_ax_3 = fg.add_subplot(gs[1, 1])
+# plt.plot(x, y3)
+# ---- Свободная компановка без графиков
+# fg = plt.figure(figsize=(9, 9), constrained_layout=True)
+# gs = fg.add_gridspec(5, 5)
+# fig_ax_1 = fg.add_subplot(gs[0, :3])
+# fig_ax_1.set_title('gs[0, :3]')
+# fig_ax_2 = fg.add_subplot(gs[0, 3:])
+# fig_ax_2.set_title('gs[0, 3:]')
+# fig_ax_3 = fg.add_subplot(gs[1:, 0])
+# fig_ax_3.set_title('gs[1:, 0]')
+# fig_ax_4 = fg.add_subplot(gs[1:, 1])
+# fig_ax_4.set_title('gs[1:, 1]')
+# fig_ax_5 = fg.add_subplot(gs[1, 2:])
+# fig_ax_5.set_title('gs[1, 2:]')
+# fig_ax_6 = fg.add_subplot(gs[2:4, 2])
+# fig_ax_6.set_title('gs[2:4, 2]')
+# fig_ax_7 = fg.add_subplot(gs[2:4, 3:])
+# fig_ax_7.set_title('gs[2:4, 3:]')
+# fig_ax_8 = fg.add_subplot(gs[4, 3:])
+# fig_ax_8.set_title('gs[4, 3:]')
+# ------ Можно заранее задать размеры областей и передать их в качестве параметров в виде массивов:
+fg = plt.figure(figsize=(5, 5),constrained_layout=True)
+widths = [1, 3]
+heights = [2, 0.7]
+gs = fg.add_gridspec(ncols=2, nrows=2, width_ratios=widths,
+height_ratios=heights)
+fig_ax_1 = fg.add_subplot(gs[0, 0])
+fig_ax_1.set_title('w:1, h:2')
+fig_ax_2 = fg.add_subplot(gs[0, 1])
+fig_ax_2.set_title('w:3, h:2')
+fig_ax_3 = fg.add_subplot(gs[1, 0])
+fig_ax_3.set_title('w:1, h:0.7')
+fig_ax_4 = fg.add_subplot(gs[1, 1])
+fig_ax_4.set_title('w:3, h:0.7')
+plt.show()
+# ---------------------------------------------------------------------------------------------------------------
+
+
+
 
