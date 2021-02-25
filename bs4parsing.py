@@ -5,18 +5,19 @@ from bs4 import BeautifulSoup
 import re
 
 class Parsing_url():
-    def __init__(self, url):
+    def __init__(self, url, url_add):
         self.__page = 1
         self.__num_pages = 0
         self.__articles = []
         self._url = url
+        self._url_add = url_add
         pass
 
     def parse(self):
         '''Главная функция'''
         while self.__page:
 
-            soup_obj, error = get_page (self.__page, self._url)
+            soup_obj, error = get_page (self.__page, self._url, self._url_add)
             if error:
                 break
 
@@ -81,23 +82,23 @@ def get_next_page_number(soup_obj):
     page = resurs.get('href')[12:-1]
     return page
 
-def parse():
-    '''Главная функция'''
-
-    page = 1
-    num_pages = 0
-    articles = []
-
-    while page:
-
-        soup_obj, error = get_page(page)
-        if error:
-            break
-
-        get_articles(soup_obj, articles)
-        num_pages += 1
-
-        page = get_next_page_number(soup_obj)
+# def parse():
+#     '''Главная функция'''
+#
+#     page = 1
+#     num_pages = 0
+#     articles = []
+#
+#     while page:
+#
+#         soup_obj, error = get_page(page)
+#         if error:
+#             break
+#
+#         get_articles(soup_obj, articles)
+#         num_pages += 1
+#
+#         page = get_next_page_number(soup_obj)
 
 
 
