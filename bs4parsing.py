@@ -77,10 +77,10 @@ def clean_text(soup_obj):
 def get_next_page_number(soup_obj):
     '''Получить следующий номер страницы или 0'''
 
-    resurs = soup_obj.find('a', { 'class' : 'arrows-pagination_item-link_next'})
-    if not resurs:
+    resurs_one = soup_obj.find('a', { 'class' : 'arrows-pagination__item-link_next'})
+    if not resurs_one:
         return 0
-    page = resurs.get('href')[12:-1]
+    page = resurs_one.get('href')[12:-1]
     return page
 
 def parse():
@@ -101,10 +101,12 @@ def parse():
 
         page = get_next_page_number(soup_obj)
 
+    return num_pages, articles
 
-    print (f'Распарсено {num_pages} страниц, получено {len (articles)} статей.')
-    for i, key in enumerate(articles):
-        print(f'{i+1} -  {str(key.keys())[12:-3]}')
+
+    # print (f'Распарсено {num_pages} страниц, получено {len (articles)} статей.')
+    # for i, key in enumerate(articles):
+    #     print(f'{i+1} -  {str(key.keys())[12:-3]}')
     # print(article for article in articles)
 
 
