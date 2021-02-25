@@ -4,44 +4,45 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-class Parsing_url():
-    def __init__(self, url, url_add):
-        self.__page = 1
-        self.__num_pages = 0
-        self.__articles = []
-        self._url = url
-        self._url_add = url_add
-        pass
+# class Parsing_url():
+#     def __init__(self, url, url_add):
+#         self.__page = 1
+#         self.__num_pages = 0
+#         self.__articles = []
+#         self._url = url
+#         self._url_add = url_add
+#         pass
+#
+#     def parse(self):
+#         '''Главная функция'''
+#         while self.__page:
+#
+#             soup_obj, error = get_page (self.__page, self._url, self._url_add)
+#             if error:
+#                 break
+#
+#             get_articles (soup_obj, self.__articles)
+#             self.__num_pages += 1
+#
+#             self.__page = get_next_page_number (soup_obj)
+#
+#         return self.__articles
+#
+def get_page(page):
+    '''Получить страницу с лучшими статьями Habr.ru'''
 
-    def parse(self):
-        '''Главная функция'''
-        while self.__page:
+    error = False
+    if page == 1:
+        url = 'https://habr.com/ru/top'
+    else:
+        url = 'https://habr.com/ru/top/page' + page + '/'
+    response = requests.get (url, headers = {'User-Agent': 'Mozilla/5.0'})
+    if response.status_code != 200:
+        error = True
+        return '', error
+    soup_obj = BeautifulSoup (response.content, 'html.parser')
+    return soup_obj, error
 
-            soup_obj, error = get_page (self.__page, self._url, self._url_add)
-            if error:
-                break
-
-            get_articles (soup_obj, self.__articles)
-            self.__num_pages += 1
-
-            self.__page = get_next_page_number (soup_obj)
-
-        return self.__articles
-
-    def get_page(self, page, url):
-        '''Получить страницу с лучшими статьями Habr.ru'''
-
-        error = False
-        if page == 1:
-            url = 'https://habr.com/ru/top'
-        else:
-            url = 'https://habr.com/ru/top/page' + page + '/'
-        response = requests.get(url, headers = {'User-Agent' : 'Mozilla/5.0'})
-        if response.status_code != 200:
-            error = True
-            return '', error
-        soup_obj = BeautifulSoup(response.content, 'html.parser')
-        return soup_obj, error
 
 def get_articles(soup_obj, articles):
     '''Получить заголовки, адреса и тексты статей со страницы'''
@@ -82,28 +83,35 @@ def get_next_page_number(soup_obj):
     page = resurs.get('href')[12:-1]
     return page
 
-# def parse():
-#     '''Главная функция'''
-#
-#     page = 1
-#     num_pages = 0
-#     articles = []
-#
-#     while page:
-#
-#         soup_obj, error = get_page(page)
-#         if error:
-#             break
-#
-#         get_articles(soup_obj, articles)
-#         num_pages += 1
-#
-#         page = get_next_page_number(soup_obj)
+def parse():
+    '''Главная функция'''
+
+    page = 1
+    num_pages = 0
+    articles = []
+
+    while page:
+
+        soup_obj, error = get_page(page)
+        if error:
+            break
+
+        get_articles(soup_obj, articles)
+        num_pages += 1
+
+        page = get_next_page_number(soup_obj)
+
+
+    print (f'Распарсено {num_pages} страниц, получено {len (articles)} статей.')
+    for i, key in enumerate(articles):
+        print(f'{i+1} -  {str(key.keys())[12:-3]}')
+    # print(article for article in articles)
 
 
 
 
 if __name__ == '__main__':
-    pars = Parsing_url()
-    pars.parse()
-    print (f'Распарсено {num_pages} страниц, получено {len (articles)} статей.')
+    # pars = Parsing_url()
+    # pars.parse()
+    parse()
+
